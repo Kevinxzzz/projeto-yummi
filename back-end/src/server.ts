@@ -1,23 +1,26 @@
 import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import userRoutes from "./routes/users";
+import usersRouter from "./routes/usersRouter";
+import ingredientsRouter from "./routes/ingredientsRouter";
+import PreparationMethodsRouter from "./routes/preparationMethodsRouter";
+import recipesRouter from "./routes/recipesRouter";
+import reviewsRouter from "./routes/reviewsRouter";
+import { createTables } from "./db/migrations";
 
-dotenv.config();
 const app = express();
-const PORT = 3000;
 app.use(express.json());
-app.use("/", userRoutes);
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI as string);
-    console.log("MongoDB connected");
-  } catch (error) {
-    console.error("error connecting to MongoDB", error);
-  }
-};
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-connectDB();
+app.use("/users", usersRouter);
+app.use("/ingredients", ingredientsRouter);
+app.use("/preparationMethods", PreparationMethodsRouter);
+app.use("/recipes", recipesRouter);
+app.use("/reviews", reviewsRouter);
+
+createTables()
+  .then(() => {
+    app.listen(3000, () => {
+      console.log("Servidor rodando na porta 3000");
+    });
+  })
+  .catch((err) => {
+    console.error("Erro ao criar tabelas", err);
+  });
