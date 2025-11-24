@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  userName String @unique
+  name String 
+  email String @unique 
+  password String
+  createdAt DateTime @default(now())
+  recipes Recipe[]
+  reviews Review[]
+}
+
+model Recipe {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  type String
+  imageUrl String?
+  prepTime String?
+  servings Int?
+  difficulty String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  ingredients Ingredient[]
+  preparationMethods PreparationMethod[]
+  reviews Review[]
+}
+
+model Ingredient {
+  id Int @id @default(autoincrement())
+  ingredients String[]
+  recipeId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+}
+
+model PreparationMethod {
+  id Int @id @default(autoincrement())
+  steps String[]
+  recipeId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  rating Int
+  comment String
+  createdAt DateTime @default(now())
+  userId Int
+  recipeId Int
+  user User @relation(fields: [userId], references: [id])
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+}
