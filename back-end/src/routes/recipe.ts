@@ -8,8 +8,16 @@ interface PreparationMethodsbody {
 }
 router.post("/", async (req, res) => {
   try {
-    const { title, description, type, imageUrl, prepTime, servings, userId } =
-      req.body;
+    const {
+      title,
+      description,
+      type,
+      imageUrl,
+      prepTime,
+      servings,
+      userId,
+      difficulty,
+    } = req.body;
 
     const data: any = {
       title,
@@ -18,6 +26,7 @@ router.post("/", async (req, res) => {
       imageUrl,
       prepTime,
       servings,
+      difficulty,
       user: { connect: { id: userId } },
     };
 
@@ -112,8 +121,16 @@ router.get(
 router.put("/:id", async (req: express.Request, res: express.Response) => {
   try {
     const recipeId = parseInt(req.params.id);
-    const { title, description, type, imageUrl, prepTime, servings, userId } =
-      req.body;
+    const {
+      title,
+      description,
+      type,
+      imageUrl,
+      prepTime,
+      servings,
+      userId,
+      difficulty,
+    } = req.body;
 
     const data: any = {
       title,
@@ -122,6 +139,7 @@ router.put("/:id", async (req: express.Request, res: express.Response) => {
       imageUrl,
       prepTime,
       servings,
+      difficulty,
       user: { connect: { id: userId } },
     };
 

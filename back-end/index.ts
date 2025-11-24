@@ -6,7 +6,12 @@ import recipeRouter from "./src/routes/recipe";
 import reviewRouter from "./src/routes/review";
 import cors from "cors";
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 const port = 3000;
 
 app.use(express.json());
