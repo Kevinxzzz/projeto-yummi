@@ -51,7 +51,6 @@ router.get("/", async (req: express.Request, res: express.Response) => {
 router.get(
   "/allInformations",
   async (req: express.Request, res: express.Response) => {
-    console.log("Fetching all recipes with all informations");
     try {
       const recipes = await prisma.recipe.findMany({
         include: {
