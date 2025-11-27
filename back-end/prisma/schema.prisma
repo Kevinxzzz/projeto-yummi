@@ -31,7 +31,7 @@ model Recipe {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId Int
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   ingredients Ingredient[]
   preparationMethods PreparationMethod[]
   reviews Review[]
@@ -41,14 +41,14 @@ model Ingredient {
   id Int @id @default(autoincrement())
   ingredients String[]
   recipeId Int
-  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model PreparationMethod {
   id Int @id @default(autoincrement())
   steps String[]
   recipeId Int
-  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model Review {
@@ -58,6 +58,6 @@ model Review {
   createdAt DateTime @default(now())
   userId Int
   recipeId Int
-  user User @relation(fields: [userId], references: [id])
-  recipe Recipe @relation(fields: [recipeId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }

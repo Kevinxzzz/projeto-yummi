@@ -1,5 +1,9 @@
 import express from "express";
 import { prisma } from "../db";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import "dotenv/config";
+
 const router = express.Router();
 
 router.get("/", async (req: express.Request, res: express.Response) => {
@@ -62,7 +66,7 @@ router.post("/", async (req: express.Request, res: express.Response) => {
         name,
         userName,
         email,
-        password,
+        password: await bcrypt.hash(password, 10),
       },
     });
     res.status(201).json(newUser);
@@ -74,6 +78,7 @@ router.post("/", async (req: express.Request, res: express.Response) => {
 router.post("/login", async (req: express.Request, res: express.Response) => {
   try {
     const { email, password } = req.body;
+
     const user = await prisma.user.findUnique({
       where: {
         email: email,
@@ -84,11 +89,24 @@ router.post("/login", async (req: express.Request, res: express.Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (password !== user?.password) {
+    const verifyPassword = await bcrypt.compare(password, user.password);
+
+    if (!verifyPassword) {
       return res.status(401).json({ message: "invalid credentials" });
     }
 
-    res.status(200).json(user);
+    const JWT_SECRET = process.env.JWT_SECRET as string;
+    const token = jwt.sign({ id: user.id, email: user.email, userName: user.userName }, JWT_SECRET, {
+      expiresIn: "2h",
+    });
+
+    return res.status(200).json({
+      token,
+      user: {
+    id: user.id,
+    userName: user.userName,
+    email: user.email
+  }});
   } catch (error) {
     res.status(500).send("Error search for this user");
   }
@@ -116,8 +134,9 @@ router.delete("/:id", async (req: express.Request, res: express.Response) => {
     await prisma.user.delete({
       where: { id: userId },
     });
-    res.status(204).send("User deleted");
+    res.status(200).json({ message: "User deleted" });
   } catch (error) {
+    console.log(error);
     res.status(500).send("Error deleting user");
   }
 });
